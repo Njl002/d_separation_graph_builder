@@ -1,0 +1,70 @@
+import React, {Component} from 'react';
+import { Circle } from 'react-konva';
+import {sets} from './constants'
+
+export default class Main extends Component {
+  constructor(props) {
+    super(props);
+
+    this.handleClick=this.handleClick.bind(this);
+    this.handleDragStart=this.handleDragStart.bind(this);
+    this.handleDragMove=this.handleDragMove.bind(this);
+  }
+
+  handleClick = () => {
+    this.props.onClick(this.props.node);
+  };
+
+  handleDragStart = e => {
+    e.target.setAttrs({
+      scaleX: 1.2,
+      scaleY: 1.2
+    });
+  };
+
+  handleDragMove = e => {
+    e.target.to({
+      duration: 0.1,
+      scaleX: 1,
+      scaleY: 1,
+    });
+    var stage = e.target.getStage();
+    let mousePos = stage.getPointerPosition();
+    let xMousePos = mousePos.x;
+    let yMousePos = mousePos.y;
+    this.props.onUpdateLocation(this.props.node, xMousePos, yMousePos)
+  };
+
+
+
+  render() {
+    const {NONE, X, Y, E} = sets;
+    if (this.props.set === NONE) {
+      var color='white';
+    }
+    else if (this.props.set === X) {
+      var color='blue';
+    }
+    else if (this.props.set === Y) {
+      var color='green';
+    }
+    else if (this.props.set === E) {
+      var color='grey';
+    }
+    return (
+      <Circle
+        draggable
+        x={this.props.xLoc}
+        y={this.props.yLoc}
+        radius={25}
+        stroke={this.props.isSelected ? 'orange' : 'black'}
+        strokeWidth={5}
+        fill={color}
+        onClick={this.handleClick}
+        onDragStart={this.handleDragStart}
+        onDragMove={this.handleDragMove}
+      />
+
+    );
+  }
+}
