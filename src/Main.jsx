@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import Canvas from './Canvas';
-import { Grid, Image, Segment, Button } from 'semantic-ui-react';
+import { Grid, Segment, Button } from 'semantic-ui-react';
 import {modes} from "./constants";
 import {sets} from "./constants";
 
