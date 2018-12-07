@@ -27,7 +27,7 @@ export default class Edge extends Component {
         ]}
         pointerLength={7}
         pointerWidth={7}
-        stroke="black"
+        stroke={this.props.isHighlighted ? "red" : "black"}
         strokeWidth={5}
         onClick={this.handleClick}
       />

@@ -57,6 +57,7 @@
     width: 20%;
     height: 100%;
     background-color: #282c34;
+    overflow-y: scroll;
 }
 #results {
   float: right;
@@ -64,6 +65,8 @@
   width: 20%;
   height: 100%;
   background-color: #282c34;
+  overflow-wrap: normal;
+  overflow-y: scroll;
 }
 
 #content-wrap {

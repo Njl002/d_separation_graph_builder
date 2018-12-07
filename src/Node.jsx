@@ -39,25 +39,28 @@ export default class Main extends Component {
 
   render() {
     const {NONE, X, Y, E} = sets;
+    let color;
     if (this.props.set === NONE) {
-      var color='white';
+      color='white';
     }
     else if (this.props.set === X) {
-      var color='blue';
+      color='lightblue';
     }
     else if (this.props.set === Y) {
-      var color='green';
+      color='lightgreen';
     }
     else if (this.props.set === E) {
-      var color='grey';
+      color='lightgrey';
     }
+    let strokeColor = this.props.isHighlighted ? 'red' : 'black';
+    strokeColor = this.props.isSelected ? 'orange' : strokeColor;
     return (
       <Circle
         draggable
         x={this.props.xLoc}
         y={this.props.yLoc}
         radius={25}
-        stroke={this.props.isSelected ? 'orange' : 'black'}
+        stroke={strokeColor}
         strokeWidth={5}
         fill={color}
         onClick={this.handleClick}

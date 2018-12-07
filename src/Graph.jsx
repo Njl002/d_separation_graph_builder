@@ -21,6 +21,7 @@ export default class Graph extends Component {
           yLoc={node.yLoc}
           set={node.set}
           isSelected={node.isSelected}
+          isHighlighted={node.isHighlighted}
 
           onClick={this.props.onClickNode}
           onUpdateLocation={this.props.onMoveNode}
@@ -30,11 +31,12 @@ export default class Graph extends Component {
     const nodeTextLocations = this.props.nodes.map(
       (node) => (
         <Text
-          font={20}
+          fontSize={16}
           key={node.key}
-          x={node.xLoc}
-          y={node.yLoc}
-          text={node.key}  
+          x={node.xLoc-35}
+          y={node.yLoc-35}
+          stroke={'2'}
+          text={""+node.key}  
         />
       )
     );
@@ -49,7 +51,8 @@ export default class Graph extends Component {
           xEnd={edge.xEnd}
           yStart={edge.yStart}
           yEnd={edge.yEnd}
-
+          isHighlighted={edge.isHighlighted}
+          
           onClick={this.props.onClickEdge}
         />
       )

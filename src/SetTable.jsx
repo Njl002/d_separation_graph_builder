@@ -1,7 +1,6 @@
 import React, {Component} from "react";
-import { Table, Icon } from 'semantic-ui-react';
+import { Table } from 'semantic-ui-react';
 import SetRow from "./SetRow";
-import {sets} from './constants';
 
 export default class SetTable extends Component {
   constructor(props) {
@@ -12,8 +11,7 @@ export default class SetTable extends Component {
   handleClickCell(node, set) {
     this.props.onCellClick(node, set);
   }
-
-
+  
   render() {
 
     const nodeTable = this.props.nodes.map(

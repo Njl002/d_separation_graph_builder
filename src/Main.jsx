@@ -5,6 +5,7 @@ import {modes} from './constants';
 import {sets} from './constants';
 import SetTable from './SetTable';
 import Results from './Results';
+import {findDSeparatedPaths} from "./BayesNet";
 
 const {NORMAL, ADD_EDGE, DELETE} = modes;
 const {NONE, X, Y, E} = sets;
@@ -25,7 +26,12 @@ export default class Main extends Component {
       selectedNodeIndex: null,
 
       // button
-      probability: "P( A | B) "
+      buttonText: "Get Path",
+      buttonLoading: false,
+
+      //results
+      results: {dseparate: [], paths: [], rules:[]},
+      highlightedPath: []
     }
 
     this.changeModeNormal=this.changeModeNormal.bind(this);
@@ -35,19 +41,19 @@ export default class Main extends Component {
     this.changeSetY=this.changeSetY.bind(this);
     this.changeSetE=this.changeSetE.bind(this);
 
-
     this.handleClick=this.handleClick.bind(this);
-    
     this.handleAddNode=this.handleAddNode.bind(this);
     this.handleMarkNode=this.handleMarkNode.bind(this);
     this.handleSelectNode=this.handleSelectNode.bind(this);
     this.handleDeleteNode=this.handleDeleteNode.bind(this);
     this.handleUpdateNodeLoc=this.handleUpdateNodeLoc.bind(this);
-
     this.handleDeleteEdge=this.handleDeleteEdge.bind(this);
 
-
     this.handleClickTableCell=this.handleClickTableCell.bind(this);
+    
+    this.handleFindResults=this.handleFindResults.bind(this);
+    this.handleResultSelect=this.handleResultSelect.bind(this);
+    this.handleResultDeSelect=this.handleResultDeSelect.bind(this);
   }
 
   
@@ -109,7 +115,7 @@ export default class Main extends Component {
     let xMousePos = mousePos.x;
     let yMousePos = mousePos.y;
     console.log("Adding node " + nodeKey + " at location: x: " + xMousePos + " y: " + yMousePos);
-    let newNode = {title: "newNode", key: nodeKey++, xLoc: xMousePos, yLoc: yMousePos, set: NONE, isSelected: false};
+    let newNode = {title: "newNode", key: nodeKey++, xLoc: xMousePos, yLoc: yMousePos, set: NONE, isSelected: false, isHighlighted: false};
 
     this.setState((prevState) => {
       return {
@@ -169,10 +175,12 @@ export default class Main extends Component {
         nodesCopy[index].set = E; // toggle on
       }
     }
-
     this.setState({
       nodes: nodesCopy 
     });
+
+    // update button after states
+    this.handleUpdateButton()
   }
 
   handleSelectNode(key) {
@@ -198,7 +206,7 @@ export default class Main extends Component {
         let fromNode = nodesCopy[selectedNodeIndex];
         let toNode = nodesCopy[index];
         let newEdge = {key: edgeKey++, from: fromNode.key, to: toNode.key, xStart: fromNode.xLoc, 
-          xEnd: toNode.xLoc, yStart: fromNode.yLoc, yEnd: toNode.yLoc}
+          xEnd: toNode.xLoc, yStart: fromNode.yLoc, yEnd: toNode.yLoc, isHighlighted: false}
         edgesCopy = [...edgesCopy, newEdge];
         console.log("Creating new edge from " + fromNode.key + " to " + toNode.key);
         console.log("Edge from: x1: " + fromNode.xLoc + " y1: " + fromNode.yLoc 
@@ -242,6 +250,8 @@ export default class Main extends Component {
       }
     );
 
+    // update button on delete node in case needed node is deleted
+    this.handleUpdateButton();
   }
   // helper callback to delete edges of a deleted node
   deleteIncidentEdges(nodeKey, edgesCopy, indicesToRemove, callback) {
@@ -310,7 +320,6 @@ export default class Main extends Component {
   handleClickTableCell(node, set) {
     console.log("Handling Clicking a Table Cell in Main");
     let prevSet = node.set;
-
     // case 1, clicked a selected cell, toggle OFF
     if (prevSet === set) {
       console.log("Toggle off");
@@ -321,7 +330,6 @@ export default class Main extends Component {
       console.log("Toggle on")
       node.set = set;
     }
-
     // update node in set
     let nodesCopy = JSON.parse(JSON.stringify(this.state.nodes))
     //make changes to ingredients
@@ -330,9 +338,137 @@ export default class Main extends Component {
     this.setState({
       nodes: nodesCopy 
     });
+    // handle update button on delete
+    this.handleUpdateButton();
   }
 
-  /** End Table handler methods */
+  /** End Table handler methods **/
+
+  // button helper
+  handleUpdateButton() {
+    let nodesCopy = JSON.parse(JSON.stringify(this.state.nodes));
+    this.findSets(nodesCopy,
+      (text) => {
+        console.log("Updating Button to " + text);
+        this.setState({
+          buttonText: text
+        })
+      }
+    );
+  }
+  findSets(nodesCopy, callback) {
+    let x = [];
+    let y = [];
+    let e = [];
+    for (let i=0; i<nodesCopy.length; i++) {
+      if (nodesCopy[i].set === X) {
+        x.push(nodesCopy[i].key)
+      }
+      else if (nodesCopy[i].set === Y) {
+        y.push(nodesCopy[i].key)
+      }
+      else if (nodesCopy[i].set === E) {
+        e.push(nodesCopy[i].key)
+      }
+    }
+    let xText = x.toString();
+    let yText = y.toString();
+    let eText = e.toString();
+    let text = "P(" + xText + "," + yText + "|" + eText + ") ?= " + 
+      "P(" + xText + "|" + eText + ") * " +
+      "P(" + yText + "|" + eText + ") "
+    callback(text);
+  }
+
+  /** Results handler methods **/
+  handleFindResults() {
+    console.log("Finding D-Separated Paths...");
+  
+    let results = [];
+    this.updateResults(results, 
+      (newResults) => {
+        console.log("Paths");
+        console.log(newResults);
+        this.setState({results: newResults});
+      }
+    );
+  }
+
+  updateResults(results, callback) {
+    let bayesNetObj = findDSeparatedPaths(this.state.nodes, this.state.edges);
+    results = {dseparate: bayesNetObj.dseparate, paths: bayesNetObj.paths, rules: bayesNetObj.rules};
+    callback(results);
+  }
+
+  // highlight path or switch highlighted path
+  handleResultSelect(path) {
+    console.log("Handling selecting path " + path);
+    let nodesCopy = JSON.parse(JSON.stringify(this.state.nodes));
+    let edgesCopy = JSON.parse(JSON.stringify(this.state.edges));
+    let highlight = true;
+
+    this.updateHighlightedPath(nodesCopy, edgesCopy, path, highlight,
+      () => {
+        this.setState({nodes: nodesCopy, edges: edgesCopy, highlightedPath: path});
+      }
+    );
+  }
+  // unhighlight a path
+  
+  handleResultDeSelect(path) {
+    console.log("Handling deselecting path " + path);
+    let nodesCopy = JSON.parse(JSON.stringify(this.state.nodes));
+    let edgesCopy = JSON.parse(JSON.stringify(this.state.edges));
+    let highlight = false;
+
+    this.updateHighlightedPath(nodesCopy, edgesCopy, path, highlight,
+      () => {
+        this.setState({nodes: nodesCopy, edges: edgesCopy, highlightedPath: []});
+      }
+    );
+  }
+  
+
+  updateHighlightedPath(nodesCopy, edgesCopy, path, highlight, callback) {
+    console.log("Updating the highlighted path " + path);
+      // unhighlight nodes first
+    for (let j=0; j<nodesCopy.length; j++) { 
+      nodesCopy[j].isHighlighted = false;
+    }
+    // unhighlight edge first
+    for (let k=0; k<edgesCopy.length; k++) {
+      edgesCopy[k].isHighlighted = false;
+    }
+    for (let i=0; i<path.length-1;i++) {
+      let firstNodeKey = path[i];
+      let secondNodeKey = path[i+1];
+      
+ 
+
+      // search nodes for the matching key
+      for (let j=0; j<nodesCopy.length; j++) {
+        // highlight correct values
+        if (nodesCopy[j].key === firstNodeKey || nodesCopy[j].key === secondNodeKey) {
+          nodesCopy[j].isHighlighted = highlight;
+        }
+      }
+
+      // search edges for matching edges
+      for (let k=0; k<edgesCopy.length; k++) {
+  
+        // highlight correct values
+        if (edgesCopy[k].to === firstNodeKey && edgesCopy[k].from === secondNodeKey) {
+          edgesCopy[k].isHighlighted = highlight;
+        }
+        else if (edgesCopy[k].from === firstNodeKey && edgesCopy[k].to === secondNodeKey) {
+          edgesCopy[k].isHighlighted = highlight;
+        }
+      }
+    }
+    callback()
+  }
+
+  /** End Results handler methods **/
 
   render() {
     return (
@@ -359,7 +495,7 @@ export default class Main extends Component {
               </Button.Group>
             </Grid.Column>           
             <Grid.Column width={8} floated="left" textAlign="justified">
-            Select Set
+              Select Set
               <Button.Group color="teal">
                 <Button disabled={this.state.set === X} onClick={this.changeSetX}>
                   X
@@ -377,16 +513,15 @@ export default class Main extends Component {
 
           <Grid.Row>
             <Grid.Column width={8} textAlign='left'>
-            Find D-Separated Paths
-            <Button >
-              {this.state.probability}
+              Find D-Separated Paths
+            <Button loading={this.state.buttonLoading} onClick={this.handleFindResults}>
+              {this.state.buttonText}
             </Button>
             </Grid.Column>
           </Grid.Row>
           </Grid>
         </Segment>
         <Segment id="main-wrap">
-    
           <Segment id="content-wrap">Canvas
 
             <Canvas 
@@ -402,10 +537,22 @@ export default class Main extends Component {
               onUpdateNodeLoc={this.handleUpdateNodeLoc}
               onDeleteEdge={this.handleDeleteEdge}        
             />
-
           </Segment>
           <div id="results">Results
-            <Results nodes={this.state.node} edges={this.state.edges}/>
+            <Grid >
+            <Grid.Column width={16}>
+    
+              <Results 
+                results={this.state.results}
+                nodes={this.state.node} 
+                edges={this.state.edges} 
+
+                highlightedPath={this.state.highlightedPath}
+                onResultSelect={this.handleResultSelect}
+                onResultDeSelect={this.handleResultDeSelect}
+              />
+            </Grid.Column>
+            </Grid>
           </div>
           <div id="sidebar">Sets
             <Grid >
