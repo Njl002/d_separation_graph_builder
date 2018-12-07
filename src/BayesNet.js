@@ -135,8 +135,8 @@ class BayesNet{
       visited.set(Array.from(this.graph.keys())[i], false);
     }
     return this.dfs(path[index], visited) && 
-    (this.directedGraph.get(path[index]).includes(path[index-1]) && 
-    this.directedGraph.get(path[index]).includes(path[index+1]));
+    (this.directedGraph.get(path[index-1]).includes(path[index]) && 
+    this.directedGraph.get(path[index+1]).includes(path[index]));
 	}
 
 	dfs(v, visited){
