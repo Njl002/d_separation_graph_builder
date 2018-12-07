@@ -1,6 +1,5 @@
 import React, {Component} from 'react';
-import { Stage, Layer, Text, Circle } from 'react-konva';
-import Konva from 'konva';
+import { Layer, Text } from 'react-konva';
 import Node from "./Node";
 import Edge from "./Edge";
 

@@ -1,8 +1,7 @@
 import React, {Component} from 'react';
-import { Arrow, Text } from 'react-konva';
-import Konva from 'konva';
+import { Arrow } from 'react-konva';
 
-export default class Edge extends React.Component {
+export default class Edge extends Component {
   constructor(props) {
     super(props);
     this.state = {

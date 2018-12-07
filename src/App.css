@@ -34,9 +34,12 @@
 #header,
 #footer {
     width:100%;
+    height: 22vh;
     min-height: 40px;
     background-color: #282c34;
 }
+
+
 
 .info { min-height: 80px; }
 
@@ -45,22 +48,30 @@
     /* overflow to handle inner floating block */
     overflow: hidden;
     width:100%;
-    height: 75vh;
+    height: 78vh;
 }
 
 #sidebar {
     float: right;
     align-self: auto;
-    width: 30%;
+    width: 20%;
     height: 100%;
     background-color: #282c34;
+}
+#results {
+  float: right;
+  align-self: auto;
+  width: 20%;
+  height: 100%;
+  background-color: #282c34;
 }
 
 #content-wrap {
     float: left;
-    width: 70%;
+    width: 60%;
     height: 100%;
     background-color: white;
+    color: black;
 }
 
 #info-wrap {
