@@ -1,11 +1,12 @@
 import React, {Component} from 'react';
 import Canvas from './Canvas';
-import { Grid, Segment, Button } from 'semantic-ui-react';
+import { Grid, Segment, Button, Image, Popup } from 'semantic-ui-react';
 import {modes} from './constants';
 import {sets} from './constants';
 import SetTable from './SetTable';
 import Results from './Results';
 import {findDSeparatedPaths} from "./BayesNet";
+import rules from "./rules.png"
 
 const {NORMAL, ADD_EDGE, DELETE} = modes;
 const {NONE, X, Y, E} = sets;
@@ -470,6 +471,10 @@ export default class Main extends Component {
 
   /** End Results handler methods **/
 
+  image = () => (
+    <Image src={rules} size="medium" />
+  );
+
   render() {
     return (
       <main className="App-container">
@@ -508,15 +513,25 @@ export default class Main extends Component {
                 </Button>
               </Button.Group>
             </Grid.Column>
+
           </Grid.Row>
 
 
           <Grid.Row>
-            <Grid.Column width={8} textAlign='left'>
+            <Grid.Column width={8} floated="left" textAlign='left'>
               Find D-Separated Paths
             <Button loading={this.state.buttonLoading} onClick={this.handleFindResults}>
               {this.state.buttonText}
             </Button>
+            </Grid.Column>
+            <Grid.Column width={8} floated="left" textAlign="justified">
+            <Popup
+              flowing
+              trigger={<Button icon='picture' content='See Rules' />}
+              content={<Image src={rules} size="large"/>}
+              on='click'
+              position='bottom left'
+            />
             </Grid.Column>
           </Grid.Row>
           </Grid>
