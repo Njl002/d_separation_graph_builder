@@ -1,6 +1,6 @@
 import React, {Component} from "react";
 import { Table, Icon } from 'semantic-ui-react';
-import {sets} from './constants';
+import {sets} from '../../constants';
 
 
 const {X, Y, E} = sets;

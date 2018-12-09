@@ -1,7 +1,7 @@
 import React, {Component} from 'react';
 import { Stage } from 'react-konva';
-import Graph from './Graph';
-import {modes} from "./constants";
+import Graph from '../graph/Graph';
+import {modes} from "../../constants";
 
 
 export default class Canvas extends Component {

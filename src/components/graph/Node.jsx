@@ -1,6 +1,6 @@
 import React, {Component} from 'react';
 import { Circle } from 'react-konva';
-import {sets} from './constants'
+import {sets} from '../../constants'
 
 export default class Main extends Component {
   constructor(props) {

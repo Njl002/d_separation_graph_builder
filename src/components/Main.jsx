@@ -1,12 +1,12 @@
 import React, {Component} from 'react';
-import Canvas from './Canvas';
+import Canvas from './canvas/Canvas';
 import { Grid, Segment, Button, Image, Popup } from 'semantic-ui-react';
-import {modes} from './constants';
-import {sets} from './constants';
-import SetTable from './SetTable';
-import Results from './Results';
-import {findDSeparatedPaths} from "./BayesNet";
-import rules from "./rules.png"
+import {modes} from '../constants';
+import {sets} from '../constants';
+import SetTable from './table/SetTable';
+import Results from './paths/Results';
+import {findDSeparatedPaths} from "../backend/BayesNet";
+import rules from "../resources/rules.png"
 
 const {NORMAL, ADD_EDGE, DELETE} = modes;
 const {NONE, X, Y, E} = sets;
