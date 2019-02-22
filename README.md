@@ -14,6 +14,11 @@ When you first open the app, there are buttons at the top of the page to change 
 the resulting paths.
 You can add nodes to the canvas by clicking on the canvas. 
 Nodes can be dragged around the canvas.
+
+(Note: since the web app is deployed on heroku, it'll fall asleep after awhile
+of no activity, therefore if its the first time visiting the web app then it may
+not load the first. In that case, refresh the page and try again.)
+
 ## Modes:
 There are 3 modes for building the graph. 
 The first mode is for marking which the nodes are in which set. You can switch between which set is marking the nodes. Mark nodes by clicking on them while on the first mode. You can also change which set each node is in by clicking on
